@@ -1,14 +1,27 @@
 const hre = require("hardhat");
 
+// scripts/deploy.js
 async function main() {
-  const PredictionMarket = await hre.ethers.getContractFactory("PredictionMarket");
-  const predictionMarket = await PredictionMarket.deploy("CHAINLINK_PRICE_FEED_ADDRESS");
+  const [deployer] = await ethers.getSigners();
+  
+  // Chainlink Price Feed Address (Ethereum Mainnet example)
+  const priceFeedAddress = "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419";
 
-  await predictionMarket.deployed();
-  console.log("PredictionMarket deployed to:", predictionMarket.address);
+  // 1. Get contract factory
+  const PredictionMarket = await ethers.getContractFactory("PredictionMarket");
+  
+  // 2. Deploy with constructor arguments
+  const contract = await PredictionMarket.deploy(
+    priceFeedAddress,  // Constructor argument
+    { gasLimit: 5000000 } // Optional overrides
+  );
+
+  console.log("Contract deployed to:", await contract.getAddress());
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });

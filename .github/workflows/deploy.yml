@@ -1,0 +1,15 @@
+# .github/workflows/deploy.yml
+name: Deploy
+on: [push]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npx hardhat compile
+      - run: npx hardhat test
+      - run: npx hardhat run scripts/deploy.js --network monad
+        env:
+          MONAD_RPC_URL: ${{ secrets.MONAD_RPC_URL }}
+          PRIVATE_KEY: ${{ secrets.DEPLOYER_KEY }}
